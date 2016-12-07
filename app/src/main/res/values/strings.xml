@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Speak It</string>
+    <string name="recognize">Przetwarzaj mowę!</string>
+    <string name="speech_prompt">Mów do mnie.</string>
+    <string name="speech_not_supported">Rozpoznawanie mowy nie jest wspierane na Twoim
+        urządzeniu.</string>
 </resources>
