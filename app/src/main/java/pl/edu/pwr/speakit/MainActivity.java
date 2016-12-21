@@ -6,17 +6,23 @@ import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+import pl.edu.pwr.speakit.commands.CallCommand;
+import pl.edu.pwr.speakit.commands.SmsCommand;
 
+//TODO SIMILARITY ALGORITHM to recognize app or contact with a string
+
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private TextView mRecognizedText;
+    private EditText mTelephoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,14 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mRecognizedText = (TextView) findViewById(R.id.recognized_text);
-
-        Button recognizeBtn = (Button) findViewById(R.id.recognize_btn);
-        recognizeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startRecognition();
-            }
-        });
+        mTelephoneNumber = (EditText) findViewById(R.id.telephone_number_edit_text);
     }
 
     @Override
@@ -50,7 +49,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startRecognition() {
+    public void makeCall(View v) {
+        CallCommand.makeCall(MainActivity.this, mTelephoneNumber.getText().toString());
+    }
+
+    public void startRecognition(View v) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -64,5 +67,10 @@ public class MainActivity extends AppCompatActivity {
                     getString(R.string.speech_not_supported),
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void sendSMS(View view) {
+        SmsCommand.sendSms(this, mTelephoneNumber.getText().toString(),
+                mRecognizedText.getText().toString());
     }
 }

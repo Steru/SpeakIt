@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="@string/recognize"
+        android:onClick="startRecognition"
         />
 
     <TextView
@@ -26,4 +27,35 @@
         android:layout_below="@id/recognize_btn"
         android:layout_centerHorizontal="true"
         />
+
+    <EditText
+        android:layout_marginTop="50dp"
+        android:id="@+id/telephone_number_edit_text"
+        android:layout_below="@id/recognized_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        />
+
+    <Button
+        android:id="@+id/temp_call_btn"
+        android:layout_below="@id/telephone_number_edit_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="Call"
+        android:onClick="makeCall"
+        />
+
+    <Button
+        android:id="@+id/smsSendButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send SMS"
+        android:layout_below="@+id/temp_call_btn"
+        android:layout_centerHorizontal="true"
+        android:onClick="sendSMS"
+        />
+
+
 </RelativeLayout>
