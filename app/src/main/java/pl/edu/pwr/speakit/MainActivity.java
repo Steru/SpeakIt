@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import pl.edu.pwr.speakit.commands.CallCommand;
+import pl.edu.pwr.speakit.commands.LaunchAppCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
 
 //TODO SIMILARITY ALGORITHM to recognize app or contact with a string
@@ -21,7 +22,8 @@ import pl.edu.pwr.speakit.commands.SmsCommand;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private final int REQ_CODE_SPEECH_INPUT = 100;
-    private TextView mRecognizedText;
+    private TextView mRecognizedTextView;
+    private String mRecognizedText;
     private EditText mTelephoneNumber;
 
     @Override
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mRecognizedText = (TextView) findViewById(R.id.recognized_text);
+        mRecognizedTextView = (TextView) findViewById(R.id.recognized_text);
         mTelephoneNumber = (EditText) findViewById(R.id.telephone_number_edit_text);
     }
 
@@ -42,7 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK && null != data) {
                     ArrayList<String> result = data
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    mRecognizedText.setText(result.get(0));
+                    mRecognizedText = result.get(0);
+                    mRecognizedTextView.setText(mRecognizedText);
                 }
                 break;
             }
@@ -70,7 +73,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendSMS(View view) {
-        SmsCommand.sendSms(this, mTelephoneNumber.getText().toString(),
-                mRecognizedText.getText().toString());
+        SmsCommand.sendSms(this, mTelephoneNumber.getText().toString(), mRecognizedText);
+    }
+
+    public void launchApp(View view) {
+        Thread launchThread = new Thread() {
+            @Override
+            public void run(){
+                LaunchAppCommand.launchApp(MainActivity.this, mRecognizedText);
+            }
+        };
+        launchThread.start();
     }
 }

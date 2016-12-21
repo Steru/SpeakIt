@@ -58,4 +58,15 @@
         />
 
 
+    <Button
+        android:id="@+id/launchAppButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Launch app"
+        android:layout_below="@+id/smsSendButton"
+        android:layout_centerHorizontal="true"
+        android:onClick="launchApp"
+        />
+
+
 </RelativeLayout>
