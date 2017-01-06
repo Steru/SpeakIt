@@ -3,7 +3,6 @@ package pl.edu.pwr.speakit.morfeusz;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,10 +15,14 @@ public class MorfeuszResponseParser {
 	public List<MorfeuszWordDO> parseFromHTML(Document document) {
 		Element tbodyElement = document.select("tbody").first();
 		Elements trElements = tbodyElement.select("tr");
-		return trElements.stream()
-			.map(this::createMorfeuszWordFromTRElement)
-			.filter(mW -> mW != null)
-			.collect(Collectors.toList());
+        List<MorfeuszWordDO> morfeuszWordDOList = new ArrayList<>();
+        for(Element e : trElements) {
+            MorfeuszWordDO morfeuszWordDO = this.createMorfeuszWordFromTRElement(e);
+            if(morfeuszWordDO != null) {
+                morfeuszWordDOList.add(morfeuszWordDO);
+            }
+        }
+		return morfeuszWordDOList;
 	}
 	
 	private MorfeuszWordDO createMorfeuszWordFromTRElement(Element trElement) {
