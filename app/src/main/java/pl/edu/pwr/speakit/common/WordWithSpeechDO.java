@@ -1,4 +1,4 @@
-package common;
+package pl.edu.pwr.speakit.common;
 
 public class WordWithSpeechDO {
 

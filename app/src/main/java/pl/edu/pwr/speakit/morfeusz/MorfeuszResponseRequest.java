@@ -1,4 +1,4 @@
-package morfeusz;
+package pl.edu.pwr.speakit.morfeusz;
 
 import java.io.IOException;
 
@@ -11,6 +11,7 @@ public class MorfeuszResponseRequest {
 	
 	public Document readMorfeuszResponse(String wordsToSend) throws IOException {
 		String requestURL = this.prepareRequestURL(wordsToSend);
+		//TODO tu moze byc problem
 		Document document = Jsoup.connect(requestURL).get();
 		return document;
 	}

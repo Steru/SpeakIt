@@ -1,4 +1,4 @@
-package common;
+package pl.edu.pwr.speakit.common;
 
 import java.util.HashMap;
 import java.util.Map;

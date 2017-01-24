@@ -1,4 +1,4 @@
-package morfeusz;
+package pl.edu.pwr.speakit.morfeusz;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,14 +11,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import common.PartOfSpeech;
+import pl.edu.pwr.speakit.common.PartOfSpeech;
 
 public class MorfeuszResponseParser {
 	
 	private String baseString;
 	
 	public List<MorfeuszWordDO> parseFromHTML(Document document) {
-		setBaseString(document);
+		//TODO
+		//setBaseString(document);
 		Element tbodyElement = document.select("tbody").first();
 		Elements trElements = tbodyElement.select("tr");
         List<MorfeuszWordDO> morfeuszWordDOList = new ArrayList<>();

@@ -1,6 +1,6 @@
-package morfeusz;
+package pl.edu.pwr.speakit.morfeusz;
 
-import common.PartOfSpeech;
+import pl.edu.pwr.speakit.common.PartOfSpeech;
 
 public class MorfeuszWordDO {
 
@@ -20,7 +20,7 @@ public class MorfeuszWordDO {
 	public MorfeuszWordDO(String mainWord, String coreWord, PartOfSpeech partOfSpeech, String originalString) {
 		super();
 		this.mainWord = mainWord;
-		this.coreWord = coreWord;
+		this.coreWord = coreWord; //
 		this.partOfSpeech = partOfSpeech;
 		this.originalString = originalString;
 	}

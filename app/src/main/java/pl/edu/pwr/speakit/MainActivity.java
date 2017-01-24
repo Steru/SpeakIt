@@ -5,26 +5,32 @@ import android.content.Intent;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import pl.edu.pwr.speakit.commands.CallCommand;
 import pl.edu.pwr.speakit.commands.LaunchAppCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
+import pl.edu.pwr.speakit.common.CommandDO;
+import pl.edu.pwr.speakit.common.CommandGenerator;
+import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 
 //TODO SIMILARITY ALGORITHM to recognize app or contact with a string
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszResponse {
     private static final String TAG = "MainActivity";
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private TextView mRecognizedTextView;
-    private String mRecognizedText;
+    private String mRecognizedText = "init";
     private EditText mTelephoneNumber;
+    private CommandGenerator mCommandGeneratorAsyncTask = new CommandGenerator(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,14 @@ public class MainActivity extends AppCompatActivity {
         CallCommand.makeCall(MainActivity.this, mTelephoneNumber.getText().toString());
     }
 
+    public void executeGeneratingCommands(View v){
+        //TODO fix commandGenerator not being able to be re-run
+        //     (AsyncTask can be run only once)
+        mCommandGeneratorAsyncTask.delegate = this;
+        mCommandGeneratorAsyncTask.setCommandString("pisać kod");
+        mCommandGeneratorAsyncTask.execute();
+    }
+
     public void startRecognition(View v) {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
@@ -79,10 +93,18 @@ public class MainActivity extends AppCompatActivity {
     public void launchApp(View view) {
         Thread launchThread = new Thread() {
             @Override
-            public void run(){
+            public void run() {
                 LaunchAppCommand.launchApp(MainActivity.this, mRecognizedText);
             }
         };
         launchThread.start();
+    }
+
+    @Override
+    public void responseFinished(List<CommandDO> commandList) {
+        if(commandList != null)
+            Log.d(TAG, "zawartość = " + commandList);
+        else
+            Log.d(TAG, "cmdList empty");
     }
 }
