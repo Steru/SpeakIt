@@ -1,4 +1,4 @@
-package pl.edu.pwr.speakit.common;
+package common;
 
 public class CommandDO {
 	

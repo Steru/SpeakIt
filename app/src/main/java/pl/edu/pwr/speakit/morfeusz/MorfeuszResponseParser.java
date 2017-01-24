@@ -1,18 +1,24 @@
-package pl.edu.pwr.speakit.morfeusz;
+package morfeusz;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import pl.edu.pwr.speakit.common.PartOfSpeech;
+import common.PartOfSpeech;
 
 public class MorfeuszResponseParser {
 	
+	private String baseString;
+	
 	public List<MorfeuszWordDO> parseFromHTML(Document document) {
+		setBaseString(document);
 		Element tbodyElement = document.select("tbody").first();
 		Elements trElements = tbodyElement.select("tr");
         List<MorfeuszWordDO> morfeuszWordDOList = new ArrayList<>();
@@ -25,6 +31,16 @@ public class MorfeuszResponseParser {
 		return morfeuszWordDOList;
 	}
 	
+	private void setBaseString(Document document) {
+		baseString = "";
+		System.out.println(document.baseUri().toString().split("text=")[1]);
+		String[] urlBuff = document.baseUri().toString().split("text=")[1].split(Pattern.quote("+"));
+		for(String urlElement : urlBuff) {
+			baseString += urlElement + " ";
+		}
+		baseString = baseString.substring(0, baseString.length()-1);
+	}
+	
 	private MorfeuszWordDO createMorfeuszWordFromTRElement(Element trElement) {
 		Elements tdElements = trElement.select("td");
 		String mainWord = tdElements.get(2).text();
@@ -33,9 +49,16 @@ public class MorfeuszResponseParser {
 		if(mainWord.length() > 2) {
 			morfeuszWord = new MorfeuszWordDO(mainWord,
 					this.parseNewWord(tdElements.get(3)),
-					this.parseWordType(tdElements.get(4).text()));
+					generateWordType(tdElements),
+					baseString);
 		}
 		return morfeuszWord;
+	}
+	
+	private PartOfSpeech generateWordType(Elements tdElements) {
+		return tdElements.get(5).text().equals("imię") ? PartOfSpeech.NAME :
+				tdElements.get(5).text().equals("nazwa geograficzna") ? PartOfSpeech.LOKALIZATION :
+						this.parseWordType(tdElements.get(4).text());
 	}
 	
 	private String parseNewWord(Element newNotParseWord) {

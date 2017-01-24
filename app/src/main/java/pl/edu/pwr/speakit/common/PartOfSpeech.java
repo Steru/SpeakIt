@@ -1,5 +1,5 @@
-package pl.edu.pwr.speakit.common;
+package common;
 
 public enum PartOfSpeech {
-	VERB, SUBSTANTIVE, ANOTHER, IGNORE, NUMERAL
+	VERB, SUBSTANTIVE, ANOTHER, IGNORE, NUMERAL, NAME, LOKALIZATION
 }

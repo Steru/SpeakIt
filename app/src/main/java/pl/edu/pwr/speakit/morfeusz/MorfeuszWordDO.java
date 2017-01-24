@@ -1,26 +1,30 @@
-package pl.edu.pwr.speakit.morfeusz;
+package morfeusz;
 
-import pl.edu.pwr.speakit.common.PartOfSpeech;
+import common.PartOfSpeech;
 
 public class MorfeuszWordDO {
 
+	// słowo podstawowe
 	private String mainWord;
+	// bezokolicznik
 	private String coreWord;
 	private PartOfSpeech partOfSpeech;
+	private String originalString;
 	
 	
 	
 	public MorfeuszWordDO() {
 		super();
 	}
-
-	public MorfeuszWordDO(String mainWord, String coreWord, PartOfSpeech partOfSpeech) {
+	
+	public MorfeuszWordDO(String mainWord, String coreWord, PartOfSpeech partOfSpeech, String originalString) {
 		super();
 		this.mainWord = mainWord;
 		this.coreWord = coreWord;
 		this.partOfSpeech = partOfSpeech;
+		this.originalString = originalString;
 	}
-	
+
 	public String getMainWord() {
 		return mainWord;
 	}
@@ -38,6 +42,14 @@ public class MorfeuszWordDO {
 	}
 	public void setPartOfSpeech(PartOfSpeech partOfSpeech) {
 		this.partOfSpeech = partOfSpeech;
+	}
+
+	public String getOriginalString() {
+		return originalString;
+	}
+
+	public void setOriginalString(String originalString) {
+		this.originalString = originalString;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package pl.edu.pwr.speakit.morfeusz;
+package morfeusz;
 
 import java.io.IOException;
 import java.util.List;

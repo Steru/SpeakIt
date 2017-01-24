@@ -1,4 +1,4 @@
-package pl.edu.pwr.speakit.common;
+package common;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,15 +21,27 @@ public class MainWordService {
 		usedAndMainWordsMap.put("wyłączyć", "wyłączyć");
 		usedAndMainWordsMap.put("wyłączyć", "wyłączyć");
 		
-			// zadzwoń
+			// dzwonić
 		usedAndMainWordsMap.put("dzwonić", "dzwonić");
 		usedAndMainWordsMap.put("zadzwonić", "dzwonić");
 		usedAndMainWordsMap.put("połączyć", "dzwonić");
 		usedAndMainWordsMap.put("łączyć", "dzwonić");
 		
-			// wyślij
+			// pisać
 		usedAndMainWordsMap.put("pisać", "pisać");
 		usedAndMainWordsMap.put("napisać", "pisać");
+		usedAndMainWordsMap.put("wysłać", "pisać");
+		
+			// dojechać
+		usedAndMainWordsMap.put("dojechać", "dojechać");
+		usedAndMainWordsMap.put("przyjechać ", "dojechać");
+		usedAndMainWordsMap.put("zajechać", "dojechać");
+		usedAndMainWordsMap.put("przybyć", "dojechać");
+		
+			// grać
+		usedAndMainWordsMap.put("grać", "grać");
+		usedAndMainWordsMap.put("puść", "grać");
+		usedAndMainWordsMap.put("odtwórz", "grać");
 		
 //		
 //		switrz(czasownik){
@@ -42,10 +54,12 @@ public class MainWordService {
 //		}
 		// rzeczowniki
 			// przeglądarka
-		usedAndMainWordsMap.put("przeglądarka", "przeglądarka");
-		usedAndMainWordsMap.put("przeglądareczka", "przeglądarka");
-		
-		usedAndMainWordsMap.put("bluetooth", "bluetooth");
+//		usedAndMainWordsMap.put("przeglądarka", "przeglądarka");
+//		usedAndMainWordsMap.put("przeglądareczka", "przeglądarka");
+//		
+//		usedAndMainWordsMap.put("bluetooth", "bluetooth");
+//		
+//		usedAndMainWordsMap.put("lokalizacja", "lokalizacja")
 	}
 	
 	public String getMainWord(String word) {

@@ -1,20 +1,23 @@
-package pl.edu.pwr.speakit.common;
+package common;
 
 public class WordWithSpeechDO {
 
 	private String word;
 	private PartOfSpeech partOfSpeech;
+	private String baseString;
 	
 	public WordWithSpeechDO() {
 		super();
 	}
 	
-	public WordWithSpeechDO(String word, PartOfSpeech partOfSpeech) {
+	public WordWithSpeechDO(String word, PartOfSpeech partOfSpeech, String baseString) {
 		super();
 		this.word = word;
 		this.partOfSpeech = partOfSpeech;
+		this.baseString = baseString;
 	}
-	
+
+
 	public String getWord() {
 		return word;
 	}
@@ -31,6 +34,14 @@ public class WordWithSpeechDO {
 		this.partOfSpeech = partOfSpeech;
 	}
 	
+	public String getBaseString() {
+		return baseString;
+	}
+
+	public void setBaseString(String baseString) {
+		this.baseString = baseString;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
