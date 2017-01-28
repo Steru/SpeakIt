@@ -1,7 +1,10 @@
 package pl.edu.pwr.speakit;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -63,9 +66,13 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     public void executeGeneratingCommands(View v){
-        mCommandGeneratorAsyncTask.delegate = this;
-        mCommandGeneratorAsyncTask.setCommandString("pisać kod");
-        mCommandGeneratorAsyncTask.run();
+        if(isOnline()) {
+            mCommandGeneratorAsyncTask.delegate = this;
+            mCommandGeneratorAsyncTask.setCommandString("pisać kod");
+            mCommandGeneratorAsyncTask.run();
+        } else {
+            showNoInternetMessage();
+        }
     }
 
     public void startRecognition(View v) {
@@ -104,5 +111,16 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
             Log.d(TAG, "zawartość = " + commandList);
         else
             Log.d(TAG, "cmdList empty");
+    }
+
+    private boolean isOnline(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    private void showNoInternetMessage(){
+        Toast.makeText(this, R.string.error_msg_no_internet, Toast.LENGTH_LONG).show();
     }
 }
