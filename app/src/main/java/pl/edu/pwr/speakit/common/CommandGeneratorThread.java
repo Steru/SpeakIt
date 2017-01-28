@@ -23,8 +23,8 @@ import pl.edu.pwr.speakit.morfeusz.MorfeuszWordDO;
 import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 import pl.edu.pwr.speakit.morfeusz.MorfeuszResponseParser;
 
-public class CommandGenerator extends AsyncTask implements Response.Listener<String> {
-    private static final String TAG = "CommandGenerator";
+public class CommandGeneratorThread extends Thread implements Response.Listener<String> {
+    private static final String TAG = "CommandGeneratorThread";
     private String morfeuszURL = "http://sgjp.pl/morfeusz/demo/?text=";
 	private MorfeuszService mMorfeuszService;
 	private MainWordService mMainWordService;
@@ -34,12 +34,13 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
 
     public IAsyncMorfeuszResponse delegate = null;
 
-    public CommandGenerator(Context context){
+    public CommandGeneratorThread(Context context){
         mContext = context;
     }
 
     @Override
-    protected Object doInBackground(Object[] objects) {
+    public void run() {
+        super.run();
         mMorfeuszService = new MorfeuszService();
         mMainWordService = new MainWordService();
         if(mCommandString.isEmpty()){
@@ -52,7 +53,6 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
     // used to handle the Volley http request

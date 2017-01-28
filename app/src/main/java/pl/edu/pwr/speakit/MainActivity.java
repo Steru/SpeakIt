@@ -19,7 +19,7 @@ import pl.edu.pwr.speakit.commands.CallCommand;
 import pl.edu.pwr.speakit.commands.LaunchAppCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
 import pl.edu.pwr.speakit.common.CommandDO;
-import pl.edu.pwr.speakit.common.CommandGenerator;
+import pl.edu.pwr.speakit.common.CommandGeneratorThread;
 import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 
 //TODO SIMILARITY ALGORITHM to recognize app or contact with a string
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     private TextView mRecognizedTextView;
     private String mRecognizedText = "init";
     private EditText mTelephoneNumber;
-    private CommandGenerator mCommandGeneratorAsyncTask = new CommandGenerator(this);
+    private CommandGeneratorThread mCommandGeneratorAsyncTask = new CommandGeneratorThread(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,11 +63,9 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     public void executeGeneratingCommands(View v){
-        //TODO fix commandGenerator not being able to be re-run
-        //     (AsyncTask can be run only once)
         mCommandGeneratorAsyncTask.delegate = this;
         mCommandGeneratorAsyncTask.setCommandString("pisać kod");
-        mCommandGeneratorAsyncTask.execute();
+        mCommandGeneratorAsyncTask.run();
     }
 
     public void startRecognition(View v) {
