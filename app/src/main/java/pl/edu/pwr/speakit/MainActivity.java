@@ -1,11 +1,15 @@
 package pl.edu.pwr.speakit;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +24,7 @@ import java.util.Locale;
 
 import pl.edu.pwr.speakit.commands.CallCommand;
 import pl.edu.pwr.speakit.commands.LaunchAppCommand;
+import pl.edu.pwr.speakit.commands.PlayMusicCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
 import pl.edu.pwr.speakit.common.CommandDO;
 import pl.edu.pwr.speakit.common.CommandGeneratorThread;
@@ -42,8 +47,33 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
 
         mRecognizedTextView = (TextView) findViewById(R.id.recognized_text);
         mTelephoneNumber = (EditText) findViewById(R.id.telephone_number_edit_text);
+
+        checkPermissions();
+
     }
 
+    private void checkPermissions() {
+        //ugly way, cause it wont wait for a request, but what the hell
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.INTERNET)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.ACCESS_NETWORK_STATE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.CALL_PHONE,
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    0);
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -103,6 +133,12 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
             }
         };
         launchThread.start();
+    }
+
+    public void playSpecificMusic(View view){
+        PlayMusicCommand playMusicCommand = new PlayMusicCommand(this);
+        playMusicCommand.playSpecificSong("song");
+
     }
 
     @Override
