@@ -141,28 +141,40 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
         return wordWithSpeechDOList;
 	}
 
-	private List<CommandDO> joinVerbAndSubstantive(List<WordWithSpeechDO> verbList, List<WordWithSpeechDO> substantiveList) {
-		List<CommandDO> commandList = new ArrayList<CommandDO>();
-		for(int verbIndex = 0; verbIndex<verbList.size(); verbIndex++) {
-			commandList.add(generateCommand(verbList.get(verbIndex), substantiveList));
-		}
-		return commandList;
-	}
-	
-	private CommandDO generateCommand(WordWithSpeechDO verb, List<WordWithSpeechDO> substantiveList) {
-		WordWithSpeechDO addresser = null;
-		if (verb.getWord().equals("pisać")) {
-			for(WordWithSpeechDO word : substantiveList) {
-				if(word.getPartOfSpeech().equals(PartOfSpeech.NAME) || word.getPartOfSpeech().equals(PartOfSpeech.NUMERAL)) {
-					addresser = word;
-				}
-			}
-			String message = generateSMSMessage(verb.getBaseString(), addresser.getWord());
-			return new CommandDO(verb.getWord(), addresser.getWord(), message);
-		} else {
-			return new CommandDO(verb.getWord(), substantiveList.get(0).getWord(), "");
-		}
-	}
+    private List<CommandDO> joinVerbAndSubstantive(List<WordWithSpeechDO> verbList, List<WordWithSpeechDO> substantiveList) {
+        List<CommandDO> commandList = new ArrayList<CommandDO>();
+        for(int verbIndex = 0; verbIndex<verbList.size(); verbIndex++) {
+            CommandDO command = generateCommand(verbList.get(verbIndex), substantiveList);
+            if (command != null) {
+                commandList.add(command);
+            }
+        }
+        return commandList;
+    }
+
+    private CommandDO generateCommand(WordWithSpeechDO verb, List<WordWithSpeechDO> substantiveList) {
+        if (substantiveList.size() > 0) {
+            WordWithSpeechDO addresser = null;
+            if (verb.getWord().equals("pisać")) {
+                for(WordWithSpeechDO word : substantiveList) {
+                    if(word.getPartOfSpeech().equals(PartOfSpeech.NAME) || word.getPartOfSpeech().equals(PartOfSpeech.NUMERAL)) {
+                        addresser = word;
+                    }
+                }
+                if (addresser != null) {
+                    String message = generateSMSMessage(verb.getBaseString(), addresser.getWord());
+                    return new CommandDO(verb.getWord(), addresser.getWord(), message);
+                } else {
+                    return new CommandDO(verb.getWord(), substantiveList.get(0).getWord(), "");
+                }
+
+            } else {
+                return new CommandDO(verb.getWord(), substantiveList.get(0).getWord(), "");
+            }
+        } else {
+            return null;
+        }
+    }
 
 	private String generateSMSMessage(String baseString, String addressName) {
 		String message = baseString.split(addressName.substring(0, addressName.length()))[1];
