@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
 
     private WordWithSpeechDO generateWordWithSpeech(MorfeuszWordDO morfeuszWordDO) {
         if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB)) {
-            String mainWord = mainWordService.getMainWord(morfeuszWordDO.getCoreWord());
+            String mainWord = mMainWordService.getMainWord(morfeuszWordDO.getCoreWord());
             if(mainWord != null) {
                 return new WordWithSpeechDO(mainWord, morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
             } else {
