@@ -80,38 +80,31 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
         queue.add(stringRequest);
 	}
 
-    private List<CommandDO> joinVerbAndSubstantive(List<WordWithSpeechDO> verbList, List<WordWithSpeechDO> substantiveList) {
-        List<CommandDO> commandList = new ArrayList<CommandDO>();
-        for(int verbIndex = 0; verbIndex<verbList.size(); verbIndex++) {
-            CommandDO command = generateCommand(verbList.get(verbIndex), substantiveList);
-            if (command != null) {
-                commandList.add(command);
+    private List<WordWithSpeechDO> generateWordWithSpeechList(List<MorfeuszWordDO> morfeuszWordList) {
+        List<WordWithSpeechDO> morfeuszWordDOList = new ArrayList<>();
+        for(MorfeuszWordDO word : morfeuszWordList) {
+            WordWithSpeechDO wordWithSpeechDO = this.generateWordWithSpeech(word);
+            if(wordWithSpeechDO != null) {
+                morfeuszWordDOList.add(wordWithSpeechDO);
             }
         }
-        return commandList;
+        return morfeuszWordDOList;
     }
 
-    private CommandDO generateCommand(WordWithSpeechDO verb, List<WordWithSpeechDO> substantiveList) {
-        if (substantiveList.size() > 0) {
-            WordWithSpeechDO addresser = null;
-            if (verb.getWord().equals("pisać")) {
-                for(WordWithSpeechDO word : substantiveList) {
-                    if(word.getPartOfSpeech().equals(PartOfSpeech.NAME) || word.getPartOfSpeech().equals(PartOfSpeech.NUMERAL)) {
-                        addresser = word;
-                    }
-                }
-                if (addresser != null) {
-                    String message = generateSMSMessage(verb.getBaseString(), addresser.getWord());
-                    return new CommandDO(verb.getWord(), addresser.getWord(), message);
-                } else {
-                    return new CommandDO(verb.getWord(), substantiveList.get(0).getWord(), "");
-                }
-
+    private WordWithSpeechDO generateWordWithSpeech(MorfeuszWordDO morfeuszWordDO) {
+        if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB)) {
+            String mainWord = mainWordService.getMainWord(morfeuszWordDO.getCoreWord());
+            if(mainWord != null) {
+                return new WordWithSpeechDO(mainWord, morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
             } else {
-                return new CommandDO(verb.getWord(), substantiveList.get(0).getWord(), "");
+                return null;
             }
         } else {
-            return null;
+            if(!morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.ANOTHER)) {
+                return new WordWithSpeechDO(morfeuszWordDO.getCoreWord(), morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
+            } else {
+                return null;
+            }
         }
     }
 
