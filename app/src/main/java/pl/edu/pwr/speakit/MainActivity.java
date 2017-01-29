@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     public void launchApp(View view) {
+        mRecognizedText = "chrome";
         Thread launchThread = new Thread() {
             @Override
             public void run() {

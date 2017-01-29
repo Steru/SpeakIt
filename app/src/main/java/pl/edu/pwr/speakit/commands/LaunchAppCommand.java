@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class LaunchAppCommand {
     private static final String TAG = "LaunchAppCommand";
+    public static final double SIMILARITY_VALUE = 0.85;
 
     public static void launchApp(Context context, String requestedAppName) {
         searchForRequestedApp(context, requestedAppName);
@@ -39,12 +40,15 @@ public class LaunchAppCommand {
                     double appNameSimilarityScore = similarityService.score(requestedAppName, appName);
 
                     //TODO figure a way to select an app which is most similar to given name
-                    if (appNameSimilarityScore < 0.8) {
+                    if (appNameSimilarityScore < SIMILARITY_VALUE) {
                         continue;
                     }
                     Log.d(TAG, "Installed package :" + packageInfo.packageName);
                     Log.d(TAG, "Launch Activity :" + launchIntentForPackage);
                     Log.d(TAG, "App name = " + appName + ", similarity :" + appNameSimilarityScore);
+
+                    Intent intent = new Intent(launchIntentForPackage);
+                    context.startActivity(intent);
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.e(TAG, "error in getting app name");
                     e.printStackTrace();
