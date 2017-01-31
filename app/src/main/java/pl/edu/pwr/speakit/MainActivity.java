@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
             } else if ("dojechać") {
                 Log.i("Rozpoznano: dojechać " + subject);
             } else if ("grać") {
-                Log.i("Rozpoznano: grać " + subject);
+                new PlayMusicCommand(MainActivity.this).playSpecificSong(subject);
             } else if ("wyłączyć") {
                 Log.i("Rozpoznano: wyłączyć " + subject);
             }
