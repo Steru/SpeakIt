@@ -86,12 +86,12 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
                     mRecognizedText = result.get(0);
                     mRecognizedTextView.setText(mRecognizedText);
                     // ustawiam wypowiedziane słowo
-                    mCommandGeneratorAsyncTask.setCommandString(mRecognizedText);
+                    mCommandGenerator.setCommandString(mRecognizedText);
+                    mCommandGenerator.run();
                     // wywołuje generowanie poleceń (jakie podać obiekty??)
-                    mCommandGeneratorAsyncTask.mCommandGeneratorAsyncTask(null);
                     // czekam????
                     // switch z działaniem
-                    doCommand();
+
                 }
                 break;
             }
@@ -99,32 +99,39 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     private void doCommand() {
-        List<CommandDO> commandDOList = mCommandGeneratorAsyncTask.getmCommandList();
+        List<CommandDO> commandDOList = mCommandGenerator.getmCommandList();
         for(int i = 0; i<commandDOList.size(); i++) {
             String verb = commandDOList.get(i).getVerb();
             String subject = commandDOList.get(i).getSubject();
-            if (verb.equals("dzwonić")) {
-                if (isNumeric(subject)) {
-                    CallCommand.makeCall(MainActivity.this, subject);
-                } else  {
-                    // commandDOList.get(i).getSubject() jest kontaktem
-                    Log.i(subject + " to kontakt nie numer");
-                }
-            } else if ("pisać") {
-                if (isNumeric(subject)) {
-                    SmsCommand.sendSms(MainActivity.this, subject, commandDOList.get(i).getContents());
-                } else  {
-                    // commandDOList.get(i).getSubject() jest kontaktem
-                    Log.i(subject + " to kontakt nie numer");
-                }
-            } else if ("włączyć") {
-                LaunchAppCommand.launchApp(MainActivity.this, subject);
-            } else if ("dojechać") {
-                Log.i("Rozpoznano: dojechać " + subject);
-            } else if ("grać") {
-                new PlayMusicCommand(MainActivity.this).playSpecificSong(subject);
-            } else if ("wyłączyć") {
-                Log.i("Rozpoznano: wyłączyć " + subject);
+            switch (verb) {
+                case "dzwonić":
+                    if (isNumeric(subject)) {
+                        CallCommand.makeCall(MainActivity.this, subject);
+                    } else {
+                        // commandDOList.get(i).getSubject() jest kontaktem
+                        Log.i(TAG, subject + " to kontakt nie numer");
+                    }
+                    break;
+                case "pisać":
+                    if (isNumeric(subject)) {
+                        SmsCommand.sendSms(MainActivity.this, subject, commandDOList.get(i).getContents());
+                    } else {
+                        // commandDOList.get(i).getSubject() jest kontaktem
+                        Log.i(TAG, subject + " to kontakt nie numer");
+                    }
+                    break;
+                case "włączyć":
+                    LaunchAppCommand.launchApp(MainActivity.this, subject);
+                    break;
+                case "dojechać":
+                    Log.i(TAG, "Rozpoznano: dojechać " + subject);
+                    break;
+                case "grać":
+                    new PlayMusicCommand(MainActivity.this).playSpecificSong(subject);
+                    break;
+                case "wyłączyć":
+                    Log.i(TAG, "Rozpoznano: wyłączyć " + subject);
+                    break;
             }
         }
     }
@@ -172,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     public void launchApp(View view) {
-        mRecognizedText = "chrome";
+        //mRecognizedText = "chrome";
         Thread launchThread = new Thread() {
             @Override
             public void run() {
@@ -190,6 +197,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
 
     @Override
     public void responseFinished(List<CommandDO> commandList) {
+        doCommand();
         if(commandList != null)
             Log.d(TAG, "zawartość = " + commandList);
         else

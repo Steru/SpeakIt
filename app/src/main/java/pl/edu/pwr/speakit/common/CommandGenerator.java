@@ -85,9 +85,6 @@ public class CommandGenerator {
                 return null;
             }
         }.execute();
-
-        //TODO make it not an asyncTask or do it not so shitty
-
     }
 
     private List<WordWithSpeechDO> generateWordWithSpeechList(List<MorfeuszWordDO> morfeuszWordList) {
