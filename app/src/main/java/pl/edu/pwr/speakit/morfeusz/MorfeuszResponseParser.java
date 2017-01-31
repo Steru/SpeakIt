@@ -74,7 +74,7 @@ public class MorfeuszResponseParser {
 			return PartOfSpeech.VERB;
 		} else if(this.isSubs(options)) {
 			return PartOfSpeech.SUBSTANTIVE;
-		}else if(this.findInArray("num", options)) {
+		}else if(this.findInArray("num", options) || this.findInArray("dig", options)) {
 			return PartOfSpeech.NUMERAL;
 		} else if(this.findInArray("ign", options)) {
 			return PartOfSpeech.IGNORE;
