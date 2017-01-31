@@ -14,34 +14,32 @@ public class MainWordService {
 		usedAndMainWordsMap.put("odpalić", "włączyć");
 		usedAndMainWordsMap.put("uruchomić", "włączyć");
 		usedAndMainWordsMap.put("puścić", "włączyć");
-		
-			// wyłączyć
+
+		// wyłączyć
 		usedAndMainWordsMap.put("wyłączyć", "wyłączyć");
 		usedAndMainWordsMap.put("zamknąć", "wyłączyć");
 		usedAndMainWordsMap.put("wyłączyć", "wyłączyć");
 		usedAndMainWordsMap.put("wyłączyć", "wyłączyć");
-		
-			// dzwonić
+
+		// dzwonić
 		usedAndMainWordsMap.put("dzwonić", "dzwonić");
 		usedAndMainWordsMap.put("zadzwonić", "dzwonić");
 		usedAndMainWordsMap.put("połączyć", "dzwonić");
 		usedAndMainWordsMap.put("łączyć", "dzwonić");
-		
-			// pisać
+
+		// pisać
 		usedAndMainWordsMap.put("pisać", "pisać");
 		usedAndMainWordsMap.put("napisać", "pisać");
 		usedAndMainWordsMap.put("wysłać", "pisać");
-		
-			// dojechać
+
+		// dojechać
 		usedAndMainWordsMap.put("dojechać", "dojechać");
-		usedAndMainWordsMap.put("przyjechać ", "dojechać");
 		usedAndMainWordsMap.put("zajechać", "dojechać");
 		usedAndMainWordsMap.put("przybyć", "dojechać");
-		
-			// grać
+
+		// grać
 		usedAndMainWordsMap.put("grać", "grać");
-		usedAndMainWordsMap.put("puść", "grać");
-		usedAndMainWordsMap.put("odtwórz", "grać");
+		usedAndMainWordsMap.put("odtworzyć", "grać");
 		
 //		
 //		switrz(czasownik){

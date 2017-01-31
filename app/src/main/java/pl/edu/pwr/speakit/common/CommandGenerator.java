@@ -183,6 +183,10 @@ public class CommandGenerator {
         mCommandString = commandString;
     }
 
+    public List<CommandDO> getmCommandList() {
+        return mCommandList;
+    }
+
     private String prepareRequestURL(String stringWithAttributes) {
         String sb = this.morfeuszURL +
                 stringWithAttributes.replaceAll(" ", "+");

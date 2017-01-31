@@ -85,10 +85,56 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     mRecognizedText = result.get(0);
                     mRecognizedTextView.setText(mRecognizedText);
+                    // ustawiam wypowiedziane słowo
+                    mCommandGeneratorAsyncTask.setCommandString(mRecognizedText);
+                    // wywołuje generowanie poleceń (jakie podać obiekty??)
+                    mCommandGeneratorAsyncTask.mCommandGeneratorAsyncTask(null);
+                    // czekam????
+                    // switch z działaniem
+                    doCommand();
                 }
                 break;
             }
         }
+    }
+
+    private void doCommand() {
+        List<CommandDO> commandDOList = mCommandGeneratorAsyncTask.getmCommandList();
+        for(int i = 0; i<commandDOList.size(); i++) {
+            String verb = commandDOList.get(i).getVerb();
+            String subject = commandDOList.get(i).getSubject();
+            if (verb.equals("dzwonić")) {
+                if (isNumeric(subject)) {
+                    CallCommand.makeCall(MainActivity.this, subject);
+                } else  {
+                    // commandDOList.get(i).getSubject() jest kontaktem
+                    Log.i(subject + " to kontakt nie numer");
+                }
+            } else if ("pisać") {
+                if (isNumeric(subject)) {
+                    SmsCommand.sendSms(MainActivity.this, subject, commandDOList.get(i).getContents());
+                } else  {
+                    // commandDOList.get(i).getSubject() jest kontaktem
+                    Log.i(subject + " to kontakt nie numer");
+                }
+            } else if ("włączyć") {
+                LaunchAppCommand.launchApp(MainActivity.this, subject);
+            } else if ("dojechać") {
+                Log.i("Rozpoznano: dojechać " + subject);
+            } else if ("grać") {
+                new PlayMusicCommand(MainActivity.this).playSpecificSong(subject);
+            } else if ("wyłączyć") {
+                Log.i("Rozpoznano: wyłączyć " + subject);
+            }
+        }
+    }
+
+    private boolean isNumeric(String str) {
+        for (char c : str.toCharArray())
+        {
+            if (!Character.isDigit(c)) return false;
+        }
+        return true;
     }
 
     public void makeCall(View v) {
