@@ -98,26 +98,22 @@ public class CommandGenerator {
 		return morfeuszWordDOList;
 	}
 
-	private WordWithSpeechDO generateWordWithSpeech(MorfeuszWordDO morfeuszWordDO) {
-		if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB) || morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.IGNORE)) {
-			String mainWord = mMainWordService.getMainWord(morfeuszWordDO.getCoreWord());
-			if(mainWord != null) {
-				if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB)) {
-					return new WordWithSpeechDO(mainWord, morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
-				} else {
-					if(mainWord.charAt(mainWord.length()-1) == '�') {
-						return new WordWithSpeechDO(mainWord, PartOfSpeech.VERB, morfeuszWordDO.getOriginalString());
-					} else {
-						return new WordWithSpeechDO(mainWord, PartOfSpeech.SUBSTANTIVE, morfeuszWordDO.getOriginalString());
-					}
-				}
-			} else {
-				return null;
-			}
-		} else {
-			return new WordWithSpeechDO(morfeuszWordDO.getCoreWord(), morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
-		}
-	}
+    private WordWithSpeechDO generateWordWithSpeech(MorfeuszWordDO morfeuszWordDO) {
+        if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB)) {
+            String mainWord = mMainWordService.getMainWord(morfeuszWordDO.getCoreWord());
+            if(mainWord != null) {
+                return new WordWithSpeechDO(mainWord, morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
+            } else {
+                return null;
+            }
+        } else {
+            if(!morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.ANOTHER)) {
+                return new WordWithSpeechDO(morfeuszWordDO.getCoreWord(), morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
+            } else {
+                return null;
+            }
+        }
+    }
 
 	private List<CommandDO> createCommandList(List<WordWithSpeechDO> wordWithSpeechList) {
 		List<WordWithSpeechDO> verbList = generateVerbList(wordWithSpeechList);
@@ -145,13 +141,16 @@ public class CommandGenerator {
         return wordWithSpeechDOList;
 	}
 
-	private List<CommandDO> joinVerbAndSubstantive(List<WordWithSpeechDO> verbList, List<WordWithSpeechDO> substantiveList) {
-		List<CommandDO> commandList = new ArrayList<CommandDO>();
-		for(int verbIndex = 0; verbIndex<verbList.size(); verbIndex++) {
-			commandList.add(generateCommand(verbList.get(verbIndex), substantiveList));
-		}
-		return commandList;
-	}
+    private List<CommandDO> joinVerbAndSubstantive(List<WordWithSpeechDO> verbList, List<WordWithSpeechDO> substantiveList) {
+        List<CommandDO> commandList = new ArrayList<CommandDO>();
+        for(int verbIndex = 0; verbIndex<verbList.size(); verbIndex++) {
+            CommandDO command = generateCommand(verbList.get(verbIndex), substantiveList);
+            if (command != null) {
+                commandList.add(command);
+            }
+        }
+        return commandList;
+    }
 
     private CommandDO generateCommand(WordWithSpeechDO verb, List<WordWithSpeechDO> substantiveList) {
         if (substantiveList.size() > 0) {
