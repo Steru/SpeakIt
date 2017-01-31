@@ -27,7 +27,7 @@ import pl.edu.pwr.speakit.commands.LaunchAppCommand;
 import pl.edu.pwr.speakit.commands.PlayMusicCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
 import pl.edu.pwr.speakit.common.CommandDO;
-import pl.edu.pwr.speakit.common.CommandGeneratorThread;
+import pl.edu.pwr.speakit.common.CommandGenerator;
 import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 
 //TODO SIMILARITY ALGORITHM to recognize app or contact with a string
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     private TextView mRecognizedTextView;
     private String mRecognizedText = "init";
     private EditText mTelephoneNumber;
-    private CommandGeneratorThread mCommandGeneratorAsyncTask = new CommandGeneratorThread(this);
+    private CommandGenerator mCommandGenerator = new CommandGenerator();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +97,9 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
 
     public void executeGeneratingCommands(View v){
         if(isOnline()) {
-            mCommandGeneratorAsyncTask.delegate = this;
-            mCommandGeneratorAsyncTask.setCommandString("pisać kod");
-            mCommandGeneratorAsyncTask.run();
+            mCommandGenerator.delegate = this;
+            mCommandGenerator.setCommandString("uruchom chrome");
+            mCommandGenerator.run();
         } else {
             showNoInternetMessage();
         }
