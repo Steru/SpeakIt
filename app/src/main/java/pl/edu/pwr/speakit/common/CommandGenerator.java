@@ -100,7 +100,7 @@ public class CommandGenerator {
 
     private WordWithSpeechDO generateWordWithSpeech(MorfeuszWordDO morfeuszWordDO) {
         if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB)) {
-            String mainWord = mainWordService.getMainWord(morfeuszWordDO.getCoreWord());
+            String mainWord = mMainWordService.getMainWord(morfeuszWordDO.getCoreWord());
             if(mainWord != null) {
                 return new WordWithSpeechDO(mainWord, morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
             } else {
