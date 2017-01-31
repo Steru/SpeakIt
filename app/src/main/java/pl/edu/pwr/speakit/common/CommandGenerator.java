@@ -176,13 +176,23 @@ public class CommandGenerator {
         }
     }
 
-	private String generateSMSMessage(String baseString, String addressName) {
-		String message = baseString.split(addressName.substring(0, addressName.length()))[1];
-		while(message.charAt(0) != ' ') {
-			message = message.substring(1, message.length());
-		}
-		return message.substring(1, message.length());
-	}
+    private String generateSMSMessage(String baseString, String addressName) {
+        String[] messageArray = baseString.split(addressName);
+        System.out.println(addressName);
+        if(messageArray.length > 1) {
+            String message = messageArray[1];
+            while(message.charAt(0) != ' ') {
+                message = message.substring(1, message.length());
+            }
+            if(message.length() > 0) {
+                return message.substring(1, message.length());
+            } else {
+                return "";
+            }
+
+        }
+        return "";
+    }
 
     public void setCommandString(String commandString) {
         mCommandString = commandString;
