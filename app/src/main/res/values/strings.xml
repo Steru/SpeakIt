@@ -4,4 +4,8 @@
     <string name="speech_prompt">Mów do mnie.</string>
     <string name="speech_not_supported">Rozpoznawanie mowy nie jest wspierane na Twoim
         urządzeniu.</string>
+    <string name="error_msg_no_internet">Brak połączenia z internetem!</string>
+    <string name="song_not_found">Song was not found. Try again</string>
+    <string name="cancel">cancel</string>
+    <string name="select_song">Select song</string>
 </resources>

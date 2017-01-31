@@ -14,6 +14,7 @@ import com.android.volley.toolbox.Volley;
 import org.jsoup.Jsoup;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +23,8 @@ import pl.edu.pwr.speakit.morfeusz.MorfeuszWordDO;
 import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 import pl.edu.pwr.speakit.morfeusz.MorfeuszResponseParser;
 
-public class CommandGenerator extends AsyncTask implements Response.Listener<String> {
-    private static final String TAG = "CommandGenerator";
+public class CommandGeneratorThread extends Thread implements Response.Listener<String> {
+    private static final String TAG = "CommandGeneratorThread";
     private String morfeuszURL = "http://sgjp.pl/morfeusz/demo/?text=";
 	private MorfeuszService mMorfeuszService;
 	private MainWordService mMainWordService;
@@ -33,12 +34,13 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
 
     public IAsyncMorfeuszResponse delegate = null;
 
-    public CommandGenerator(Context context){
+    public CommandGeneratorThread(Context context){
         mContext = context;
     }
 
     @Override
-    protected Object doInBackground(Object[] objects) {
+    public void run() {
+        super.run();
         mMorfeuszService = new MorfeuszService();
         mMainWordService = new MainWordService();
         if(mCommandString.isEmpty()){
@@ -51,7 +53,6 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
                 e.printStackTrace();
             }
         }
-        return null;
     }
 
     // used to handle the Volley http request
@@ -93,7 +94,7 @@ public class CommandGenerator extends AsyncTask implements Response.Listener<Str
 
     private WordWithSpeechDO generateWordWithSpeech(MorfeuszWordDO morfeuszWordDO) {
         if(morfeuszWordDO.getPartOfSpeech().equals(PartOfSpeech.VERB)) {
-            String mainWord = mainWordService.getMainWord(morfeuszWordDO.getCoreWord());
+            String mainWord = mMainWordService.getMainWord(morfeuszWordDO.getCoreWord());
             if(mainWord != null) {
                 return new WordWithSpeechDO(mainWord, morfeuszWordDO.getPartOfSpeech(), morfeuszWordDO.getOriginalString());
             } else {

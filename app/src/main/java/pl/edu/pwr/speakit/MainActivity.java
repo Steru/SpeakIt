@@ -1,8 +1,15 @@
 package pl.edu.pwr.speakit;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.speech.RecognizerIntent;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,9 +24,10 @@ import java.util.Locale;
 
 import pl.edu.pwr.speakit.commands.CallCommand;
 import pl.edu.pwr.speakit.commands.LaunchAppCommand;
+import pl.edu.pwr.speakit.commands.PlayMusicCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
 import pl.edu.pwr.speakit.common.CommandDO;
-import pl.edu.pwr.speakit.common.CommandGenerator;
+import pl.edu.pwr.speakit.common.CommandGeneratorThread;
 import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 
 //TODO SIMILARITY ALGORITHM to recognize app or contact with a string
@@ -30,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     private TextView mRecognizedTextView;
     private String mRecognizedText = "init";
     private EditText mTelephoneNumber;
-    private CommandGenerator mCommandGeneratorAsyncTask = new CommandGenerator(this);
+    private CommandGeneratorThread mCommandGeneratorAsyncTask = new CommandGeneratorThread(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,8 +47,33 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
 
         mRecognizedTextView = (TextView) findViewById(R.id.recognized_text);
         mTelephoneNumber = (EditText) findViewById(R.id.telephone_number_edit_text);
+
+        checkPermissions();
+
     }
 
+    private void checkPermissions() {
+        //ugly way, cause it wont wait for a request, but what the hell
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.INTERNET)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.ACCESS_NETWORK_STATE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.CALL_PHONE,
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    0);
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -109,11 +142,13 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     public void executeGeneratingCommands(View v){
-        //TODO fix commandGenerator not being able to be re-run
-        //     (AsyncTask can be run only once)
-        mCommandGeneratorAsyncTask.delegate = this;
-        mCommandGeneratorAsyncTask.setCommandString("pisać kod");
-        mCommandGeneratorAsyncTask.execute();
+        if(isOnline()) {
+            mCommandGeneratorAsyncTask.delegate = this;
+            mCommandGeneratorAsyncTask.setCommandString("pisać kod");
+            mCommandGeneratorAsyncTask.run();
+        } else {
+            showNoInternetMessage();
+        }
     }
 
     public void startRecognition(View v) {
@@ -137,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     public void launchApp(View view) {
+        mRecognizedText = "chrome";
         Thread launchThread = new Thread() {
             @Override
             public void run() {
@@ -146,11 +182,28 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
         launchThread.start();
     }
 
+    public void playSpecificMusic(View view){
+        PlayMusicCommand playMusicCommand = new PlayMusicCommand(this);
+        playMusicCommand.playSpecificSong("song");
+
+    }
+
     @Override
     public void responseFinished(List<CommandDO> commandList) {
         if(commandList != null)
             Log.d(TAG, "zawartość = " + commandList);
         else
             Log.d(TAG, "cmdList empty");
+    }
+
+    private boolean isOnline(){
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    private void showNoInternetMessage(){
+        Toast.makeText(this, R.string.error_msg_no_internet, Toast.LENGTH_LONG).show();
     }
 }

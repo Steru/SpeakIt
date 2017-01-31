@@ -72,9 +72,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="EXECUTE COMMAND GENERATION"
-        android:layout_below="@+id/launchAppButton"
-        android:layout_centerHorizontal="true"
         android:onClick="executeGeneratingCommands"
+        android:id="@+id/button2"
+        android:layout_below="@+id/play_music_button"
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="play music"
+        android:onClick="playSpecificMusic"
+        android:id="@+id/play_music_button"
+        android:layout_below="@+id/launchAppButton"
+        android:layout_alignLeft="@+id/launchAppButton"
+        android:layout_alignStart="@+id/launchAppButton"
         />
 
 
