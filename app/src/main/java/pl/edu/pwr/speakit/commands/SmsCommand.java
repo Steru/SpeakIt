@@ -10,8 +10,9 @@ import android.net.Uri;
 public class SmsCommand {
 
     public static void sendSms(Context context, String number, String message){
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:" + number));
+        Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.putExtra("sms_body", message);
+        intent.setData(Uri.parse("smsto:" + number));
         context.startActivity(intent);
     }
 }

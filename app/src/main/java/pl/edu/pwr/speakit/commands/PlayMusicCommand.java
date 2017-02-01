@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -28,16 +29,30 @@ public class PlayMusicCommand {
     private static String TAG = "PlayMusicCommand";
     private final Context mContext;
     private List<Song> mSongList = new ArrayList();
+    private final Handler handler;
+
     private Song mChosenOne;
 
     public PlayMusicCommand(Context context) {
         mContext = context;
+        handler = new Handler(context.getMainLooper());
+    }
+
+    private void runOnUiThread(Runnable r) {
+        handler.post(r);
     }
 
     public void playSpecificSong(String phrase) {
         matchSongTitle(phrase, getAllSongs());
         if (mSongList.isEmpty()) {
-            Toast.makeText(mContext, R.string.song_not_found, Toast.LENGTH_LONG).show();
+            runOnUiThread(new Runnable() {
+                              @Override
+                              public void run() {
+                                  Toast.makeText(mContext,
+                                          R.string.song_not_found,
+                                          Toast.LENGTH_LONG).show();
+                              }
+                          });
         } else if (mSongList.size() == 1) {
             mChosenOne = mSongList.get(0);
             launchPlayingIntent();
@@ -55,32 +70,37 @@ public class PlayMusicCommand {
     }
 
     private void showDialogChooser() {
-        ArrayAdapter<Song> arrayAdapter = new ArrayAdapter<>(mContext,
-                android.R.layout.select_dialog_singlechoice);
-
-        for (Song s : mSongList){
-            arrayAdapter.add(s);
-        }
-
-        AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
-        builderSingle.setTitle(R.string.select_song);
-
-        builderSingle.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+        runOnUiThread(new Runnable() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
+            public void run() {
+                ArrayAdapter<Song> arrayAdapter = new ArrayAdapter<>(mContext,
+                        android.R.layout.select_dialog_singlechoice);
+
+                for (Song s : mSongList){
+                    arrayAdapter.add(s);
+                }
+
+                AlertDialog.Builder builderSingle = new AlertDialog.Builder(mContext);
+                builderSingle.setTitle(R.string.select_song);
+
+                builderSingle.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //String strName = mSongList.get(which).toString();
+                        mChosenOne = mSongList.get(which);
+                        Log.d(TAG, "Chosen -> " + mChosenOne);
+                        launchPlayingIntent();
+                    }
+                });
+                builderSingle.show();
             }
         });
-        builderSingle.setAdapter(arrayAdapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //String strName = mSongList.get(which).toString();
-                mChosenOne = mSongList.get(which);
-                Log.d(TAG, "Chosen -> " + mChosenOne);
-                launchPlayingIntent();
-            }
-        });
-        builderSingle.show();
     }
 
     private void matchSongTitle(String phrase, List<Song> allSongs) {

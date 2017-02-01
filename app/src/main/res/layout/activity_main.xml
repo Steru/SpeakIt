@@ -12,6 +12,7 @@
     >
 
     <Button
+        android:padding="20dp"
         android:id="@+id/recognize_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,65 +29,28 @@
         android:layout_centerHorizontal="true"
         />
 
-    <EditText
-        android:layout_marginTop="50dp"
-        android:id="@+id/telephone_number_edit_text"
-        android:layout_below="@id/recognized_text"
+
+    <TextView
+        android:id="@+id/desc_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
-        />
-
-    <Button
-        android:id="@+id/temp_call_btn"
-        android:layout_below="@id/telephone_number_edit_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:paddingTop="50dp"
+        android:layout_below="@id/recognized_text"
         android:layout_centerHorizontal="true"
-        android:text="Call"
-        android:onClick="makeCall"
+        android:text="@string/description_header"
+        android:gravity="center_horizontal"
         />
 
-    <Button
-        android:id="@+id/smsSendButton"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/desc"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Send SMS"
-        android:layout_below="@+id/temp_call_btn"
+        android:paddingTop="20dp"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/desc_header"
         android:layout_centerHorizontal="true"
-        android:onClick="sendSMS"
-        />
-
-
-    <Button
-        android:id="@+id/launchAppButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Launch app"
-        android:layout_below="@+id/smsSendButton"
-        android:layout_centerHorizontal="true"
-        android:onClick="launchApp"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="EXECUTE COMMAND GENERATION"
-        android:onClick="executeGeneratingCommands"
-        android:id="@+id/button2"
-        android:layout_below="@+id/play_music_button"
-        android:layout_centerHorizontal="true"
-        />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="play music"
-        android:onClick="playSpecificMusic"
-        android:id="@+id/play_music_button"
-        android:layout_below="@+id/launchAppButton"
-        android:layout_alignLeft="@+id/launchAppButton"
-        android:layout_alignStart="@+id/launchAppButton"
+        android:text="@string/description"
         />
 
 

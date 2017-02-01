@@ -9,9 +9,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,11 @@ public class CommandGenerator {
     private String mCommandString;
     private List<CommandDO> mCommandList;
 
-    public IAsyncMorfeuszResponse delegate = null;
+    private IAsyncMorfeuszResponse mDelegate;
+
+    public CommandGenerator(IAsyncMorfeuszResponse delegate){
+            this.mDelegate = delegate;
+    }
 
     public void run() {
         mMainWordService = new MainWordService();
@@ -43,7 +49,7 @@ public class CommandGenerator {
                 .parseFromHTML(Jsoup.parse(response));
         List<WordWithSpeechDO> wordWithSpeechList = this.generateWordWithSpeechList(morfeuszWordList);
         mCommandList = createCommandList(wordWithSpeechList);
-        delegate.responseFinished(mCommandList);
+            mDelegate.responseFinished(mCommandList);
     }
 
     private void tryToGetSomething() {
@@ -177,6 +183,9 @@ public class CommandGenerator {
     }
 
     private String generateSMSMessage(String baseString, String addressName) {
+        if(addressName == null || baseString == null){
+            return "";
+        }
         String[] messageArray = baseString.split(addressName);
         System.out.println(addressName);
         if(messageArray.length > 1) {
@@ -203,8 +212,13 @@ public class CommandGenerator {
     }
 
     private String prepareRequestURL(String stringWithAttributes) {
-        String sb = this.morfeuszURL +
-                stringWithAttributes.replaceAll(" ", "+");
+        String sb = null;
+        try {
+            sb = morfeuszURL +
+                    URLEncoder.encode(stringWithAttributes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         return sb;
     }
 }

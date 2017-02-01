@@ -8,4 +8,12 @@
     <string name="song_not_found">Song was not found. Try again</string>
     <string name="cancel">cancel</string>
     <string name="select_song">Select song</string>
+    <string name="description_header">Funkcjonalność</string>
+    <string name="description">włączyć, odpalić, uruchomić + nazwa aplikacji\n
+    łączyć, dzwonić, telefonować + numer telefonu\n
+    pisać, napisać, wysłać + numer telefonu\n
+    jechać, dojechać, zajechać + nazwa miejsca\n
+    grać, zagrać, puścić, odtworzyć + tytuł/autor
+
+    </string>
 </resources>

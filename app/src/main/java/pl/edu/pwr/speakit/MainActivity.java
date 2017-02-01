@@ -7,6 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.speech.RecognizerIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,11 +22,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import pl.edu.pwr.speakit.commands.CallCommand;
+import pl.edu.pwr.speakit.commands.DriveCommand;
 import pl.edu.pwr.speakit.commands.LaunchAppCommand;
 import pl.edu.pwr.speakit.commands.PlayMusicCommand;
 import pl.edu.pwr.speakit.commands.SmsCommand;
@@ -30,15 +37,12 @@ import pl.edu.pwr.speakit.common.CommandDO;
 import pl.edu.pwr.speakit.common.CommandGenerator;
 import pl.edu.pwr.speakit.morfeusz.IAsyncMorfeuszResponse;
 
-//TODO SIMILARITY ALGORITHM to recognize app or contact with a string
-
 public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszResponse {
     private static final String TAG = "MainActivity";
     private final int REQ_CODE_SPEECH_INPUT = 100;
     private TextView mRecognizedTextView;
     private String mRecognizedText = "init";
-    private EditText mTelephoneNumber;
-    private CommandGenerator mCommandGenerator = new CommandGenerator();
+    private CommandGenerator mCommandGenerator = new CommandGenerator(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,34 +50,11 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
         setContentView(R.layout.activity_main);
 
         mRecognizedTextView = (TextView) findViewById(R.id.recognized_text);
-        mTelephoneNumber = (EditText) findViewById(R.id.telephone_number_edit_text);
 
         checkPermissions();
 
     }
 
-    private void checkPermissions() {
-        //ugly way, cause it wont wait for a request, but what the hell
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.CALL_PHONE)
-                != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.INTERNET)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.ACCESS_NETWORK_STATE)
-                        != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(MainActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(MainActivity.this,
-                    new String[]{Manifest.permission.CALL_PHONE,
-                            Manifest.permission.INTERNET,
-                            Manifest.permission.ACCESS_NETWORK_STATE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE},
-                    0);
-        }
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -85,13 +66,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
                             .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                     mRecognizedText = result.get(0);
                     mRecognizedTextView.setText(mRecognizedText);
-                    // ustawiam wypowiedziane słowo
-                    mCommandGenerator.setCommandString(mRecognizedText);
-                    mCommandGenerator.run();
-                    // wywołuje generowanie poleceń (jakie podać obiekty??)
-                    // czekam????
-                    // switch z działaniem
-
+                    executeCommandGeneration(mRecognizedText);
                 }
                 break;
             }
@@ -125,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
                     break;
                 case "dojechać":
                     Log.i(TAG, "Rozpoznano: dojechać " + subject);
+                    DriveCommand.go(this, subject);
                     break;
                 case "grać":
                     new PlayMusicCommand(MainActivity.this).playSpecificSong(subject);
@@ -137,24 +113,18 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
     }
 
     private boolean isNumeric(String str) {
-        for (char c : str.toCharArray())
-        {
+        for (char c : str.toCharArray())        {
             if (!Character.isDigit(c)) return false;
         }
         return true;
     }
 
-    public void makeCall(View v) {
-        CallCommand.makeCall(MainActivity.this, mTelephoneNumber.getText().toString());
-    }
-
-    public void executeGeneratingCommands(View v){
+    private void executeCommandGeneration(String val) {
         if(isOnline()) {
-            mCommandGenerator.delegate = this;
-            mCommandGenerator.setCommandString("uruchom chrome");
+            mCommandGenerator.setCommandString(val);
             mCommandGenerator.run();
         } else {
-            showNoInternetMessage();
+            toastIt(getString(R.string.error_msg_no_internet));
         }
     }
 
@@ -174,34 +144,26 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
         }
     }
 
-    public void sendSMS(View view) {
-        SmsCommand.sendSms(this, mTelephoneNumber.getText().toString(), mRecognizedText);
-    }
-
-    public void launchApp(View view) {
-        //mRecognizedText = "chrome";
-        Thread launchThread = new Thread() {
-            @Override
-            public void run() {
-                LaunchAppCommand.launchApp(MainActivity.this, mRecognizedText);
-            }
-        };
-        launchThread.start();
-    }
-
-    public void playSpecificMusic(View view){
-        PlayMusicCommand playMusicCommand = new PlayMusicCommand(this);
-        playMusicCommand.playSpecificSong("song");
-
-    }
-
     @Override
     public void responseFinished(List<CommandDO> commandList) {
-        doCommand();
-        if(commandList != null)
-            Log.d(TAG, "zawartość = " + commandList);
-        else
+        if(commandList != null) {
+            if(commandList.isEmpty()){
+                runOnUiThread(new Runnable() { // oh lord
+                    @Override
+                    public void run() {       // why
+                        Toast.makeText(MainActivity.this,
+                                "Niepowodzenie rozpoznania komendy.",
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Log.d(TAG, "zawartość = " + commandList);
+                doCommand();
+            }
+        }
+        else {
             Log.d(TAG, "cmdList empty");
+        }
     }
 
     private boolean isOnline(){
@@ -211,7 +173,30 @@ public class MainActivity extends AppCompatActivity implements IAsyncMorfeuszRes
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    private void showNoInternetMessage(){
-        Toast.makeText(this, R.string.error_msg_no_internet, Toast.LENGTH_LONG).show();
+    private void toastIt(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    private void checkPermissions() {
+        //ugly way, cause it wont wait for a request, but what the hell
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.CALL_PHONE)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.INTERNET)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.ACCESS_NETWORK_STATE)
+                        != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.CALL_PHONE,
+                            Manifest.permission.INTERNET,
+                            Manifest.permission.ACCESS_NETWORK_STATE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    0);
+        }
     }
 }

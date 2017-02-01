@@ -34,34 +34,20 @@ public class MainWordService {
 
 		// dojechać
 		usedAndMainWordsMap.put("dojechać", "dojechać");
+		usedAndMainWordsMap.put("jechać", "dojechać");
 		usedAndMainWordsMap.put("zajechać", "dojechać");
 		usedAndMainWordsMap.put("przybyć", "dojechać");
 
+
 		// grać
 		usedAndMainWordsMap.put("grać", "grać");
+		usedAndMainWordsMap.put("zagrać", "grać");
+		usedAndMainWordsMap.put("puścić", "grać");
 		usedAndMainWordsMap.put("odtworzyć", "grać");
-		
-//		
-//		switrz(czasownik){
-//			return CallCommand(rzeczownik);
-//			
-//		}
-//		
-//		class CallCommand extends CommandDO{
-//			
-//		}
-		// rzeczowniki
-			// przeglądarka
-//		usedAndMainWordsMap.put("przeglądarka", "przeglądarka");
-//		usedAndMainWordsMap.put("przeglądareczka", "przeglądarka");
-//		
-//		usedAndMainWordsMap.put("bluetooth", "bluetooth");
-//		
-//		usedAndMainWordsMap.put("lokalizacja", "lokalizacja")
+
 	}
-	
+
 	public String getMainWord(String word) {
 		return this.usedAndMainWordsMap.get(word);
 	}
-
 }
